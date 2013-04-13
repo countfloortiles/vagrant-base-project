@@ -1,0 +1,98 @@
+{
+    "services": {
+        // TODO: We also want to be able to expose a service's location to another service in
+        //       the architecture.
+        "analytics_api": {
+            "topology": "pool",
+            "provider": "virtualbox",
+            "ip_pool": {
+                "range": {
+                    "start": "192.168.0.0",
+                    "end": "192.168.0.255"
+                }
+            },
+            "instances": {
+                // TODO: It doesn't matter what these instances are named -- we don't want to
+                //       enumerate every possible role within an architecture, so let the
+                //       architect name the roles within their own systems.  We do need to be
+                //       able to specify relationships between the different roles of instances
+                //       (including relationships between instances of the same role).
+                "workers": {
+                },
+                "lb": {
+                }
+            }
+            "workers": {
+                "quantity": 2,
+                "role": "api_worker"
+            },
+            "lb": {
+                "role": "lb"
+            }
+        },
+        "riak": {
+            "topology": "cluster",
+            "provider": "virtualbox",
+            "ip_pool": {
+                "range": {
+                    "start": "192.168.1.0",
+                    "end": "192.168.1.255"
+                }
+            },
+            "nodes": {
+                "quantity": 5,
+                "role": "riak_node"
+            },
+            "lb": {
+                "role": "lb"
+            }
+        }
+    },
+    "roles": {
+        "lb": {
+            "virtual_hardware": {"memory": 128, "cpus": 2},
+            "box": "lucid64",
+            "synced_dir": "synced/lb/",
+            "provision": [
+                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
+                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
+                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
+                {"provisioner": "shell", "path": "bootstrap/git.sh"},
+                {"provisioner": "shell", "path": "bootstrap/make.sh"},
+                {"provisioner": "shell", "path": "bootstrap/haproxy.sh"}
+            ]
+        },
+        "api_worker": {
+            "virtual_hardware": {"memory": 512, "cpus": 8},
+            "box": "lucid64",
+            "synced_dir": "synced/api/",
+            "provision": [
+                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
+                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
+                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
+                {"provisioner": "shell", "path": "bootstrap/git.sh"},
+                {"provisioner": "shell", "path": "bootstrap/make.sh"},
+                {"provisioner": "shell", "path": "bootstrap/nodejs.sh"}
+            ]
+        },
+        "riak_node": {
+            "virtual_hardware": {"memory": 256, "cpus": 4},
+            "box": "lucid64",
+            "synced_dir": "synced/riak/",
+            "provision": [
+                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
+                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
+                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
+                {"provisioner": "shell", "path": "bootstrap/git.sh"},
+                {"provisioner": "shell", "path": "bootstrap/make.sh"},
+                {"provisioner": "shell", "path": "bootstrap/riak.sh"}
+            ]
+        }
+    },
+    "boxes": {
+        "lucid64": {
+            "box_url": "http://files.vagrantup.com/lucid64.box",
+            "description": "A basic 64-bit Ubuntu 10.04 installation."
+        }
+    }
+}
