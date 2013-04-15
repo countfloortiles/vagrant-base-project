@@ -15,6 +15,11 @@ def setup(system)
     # setup decides for the instance (i.e. instance name, IP address, etc.).
     built_instances = {}
 
+    # TODO: For each service name, load corresponding *.processed.json data file if
+    # it exists, avoiding the need to create instances and assign IP addresses.
+    system["services"].each do |service_name, service_desc|
+    end
+
     # Do setup.
     Vagrant.configure("2") do |config|
         system["services"].each do |service_name, service_desc|
@@ -104,9 +109,10 @@ def setup(system)
     print "instances: \n" + JSON.pretty_generate(built_instances) + "\n"
 end
 
-# Load JSON files describing system architecture, building each.
-Dir["systems_architecture/*"].each do |filename|
-    filename = filename.scan(/^.*\.json$/i)
+# Load JSON files describing system architecture, building each.  Config files must
+# be named using *.config.json format.
+Dir["infrastructure/config/*"].each do |filename|
+    filename = filename.scan(/^.*\.config\.json$/i)
     if (filename.any?)
         setup(JSON.parse(File.read(filename[0])))
     end

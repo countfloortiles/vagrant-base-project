@@ -1,0 +1,35 @@
+{
+    "configured_instances": {
+        "analytics_api": {
+            "analytics_api.api_worker.0": {
+                "ip_address": "33.33.33.0"
+            },
+            "analytics_api.api_worker.1": {
+                "ip_address": "33.33.33.1"
+            },
+            "analytics_api.lb.0": {
+                "ip_address": "33.33.33.2"
+            }
+        },
+        "riak": {
+            "riak.riak_node.0": {
+                "ip_address": "33.33.34.0"
+            },
+            "riak.riak_node.1": {
+                "ip_address": "33.33.34.1"
+            },
+            "riak.riak_node.2": {
+                "ip_address": "33.33.34.2"
+            },
+            "riak.riak_node.3": {
+                "ip_address": "33.33.34.3"
+            },
+            "riak.riak_node.4": {
+                "ip_address": "33.33.34.4"
+            },
+            "riak.lb.0": {
+                "ip_address": "33.33.34.5"
+            }
+        }
+    }
+}
