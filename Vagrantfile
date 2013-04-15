@@ -35,7 +35,7 @@ def setup(system)
                 end
             end
             if service_config["ip_pool"].has_key?("list")
-                ip_pool << service_config["ip_pool"]["list"]
+                service_config["ip_pool"]["list"].each { |ip_address| ip_pool << IPAddr.new(ip_address) }
             end
 
             # Derive configuration for each instance.
