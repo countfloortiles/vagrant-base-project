@@ -113,7 +113,7 @@ def setup(system)
                     }.each do |synced_id, synced_config|
                         # Create host directory if it doesn't exist.
                         if !FileTest::directory?(synced_config[:host_dir])
-                            Dir::mkdir(synced_config[:host_dir])
+                            FileUtils.mkdir_p(synced_config[:host_dir])
                         end
                         instance.vm.synced_folder synced_config[:host_dir], synced_config[:guest_dir], { id: synced_id, nfs: true }
                     end
