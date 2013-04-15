@@ -22,12 +22,12 @@
             "box": "lucid64",
             "synced_dir": "synced/lb/",
             "provision": [
-                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
-                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
-                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
-                {"provisioner": "shell", "path": "bootstrap/git.sh"},
-                {"provisioner": "shell", "path": "bootstrap/make.sh"},
-                {"provisioner": "shell", "path": "bootstrap/haproxy.sh"}
+                { "provisioner": "shell", "path": "curl.sh" },
+                { "provisioner": "shell", "path": "htop.sh" },
+                { "provisioner": "shell", "path": "vim.sh" },
+                { "provisioner": "shell", "path": "git.sh" },
+                { "provisioner": "shell", "path": "make.sh" },
+                { "provisioner": "shell", "path": "haproxy.sh" }
             ]
         },
         "api_worker": {
@@ -36,12 +36,12 @@
             "box": "lucid64",
             "synced_dir": "synced/api/",
             "provision": [
-                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
-                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
-                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
-                {"provisioner": "shell", "path": "bootstrap/git.sh"},
-                {"provisioner": "shell", "path": "bootstrap/make.sh"},
-                {"provisioner": "shell", "path": "bootstrap/nodejs.sh"}
+                { "provisioner": "shell", "path": "curl.sh" },
+                { "provisioner": "shell", "path": "htop.sh" },
+                { "provisioner": "shell", "path": "vim.sh" },
+                { "provisioner": "shell", "path": "git.sh" },
+                { "provisioner": "shell", "path": "make.sh" },
+                { "provisioner": "shell", "path": "nodejs.sh" }
             ]
         },
         "riak_node": {
@@ -50,12 +50,12 @@
             "box": "lucid64",
             "synced_dir": "synced/riak/",
             "provision": [
-                {"provisioner": "shell", "path": "bootstrap/curl.sh"},
-                {"provisioner": "shell", "path": "bootstrap/htop.sh"},
-                {"provisioner": "shell", "path": "bootstrap/vim.sh"},
-                {"provisioner": "shell", "path": "bootstrap/git.sh"},
-                {"provisioner": "shell", "path": "bootstrap/make.sh"},
-                {"provisioner": "shell", "path": "bootstrap/riak.sh"}
+                { "provisioner": "shell", "path": "curl.sh" },
+                { "provisioner": "shell", "path": "htop.sh" },
+                { "provisioner": "shell", "path": "vim.sh" },
+                { "provisioner": "shell", "path": "git.sh" },
+                { "provisioner": "shell", "path": "make.sh" },
+                { "provisioner": "shell", "path": "riak.sh" }
             ]
         }
     },

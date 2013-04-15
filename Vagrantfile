@@ -93,7 +93,7 @@ def setup(system)
                     #instance_config["provision"].each do |provision|
                     #    case provision["provisioner"]
                     #    when "shell"
-                    #        instance.vm.provision :shell, :path => provision["path"]
+                    #        instance.vm.provision :shell, :path => "provision/shell/#{provision["path"]}"
                     #    end
                     #end
                 end
