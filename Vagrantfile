@@ -8,91 +8,89 @@
 # external tools to make working with systems architecture in virtualized and cloud
 # environments more practical.
 
-
 # Define the system_up function for running a system.
 def setup(system)
-    # Keep track of information about each machine built including details that
-    # setup decides for the instance (i.e. instance name, IP address, etc.).
-    built_instances = {}
 
-    # TODO: For each service name, load corresponding *.processed.json data file if
-    # it exists, avoiding the need to create instances and assign IP addresses.
-    system["services"].each do |service_name, service_desc|
-    end
+    # For each service name, load corresponding *.processed.json data file if it
+    # exists, avoiding the need to create instances and assign IP addresses.
+    # Otherwise create the service config data.
+    system["services"].each do |service_name, service_config|
+        processed = {}
 
-    # Do setup.
-    Vagrant.configure("2") do |config|
-        system["services"].each do |service_name, service_desc|
-
+        filename = "infrastructure/processed/#{service_name}.processed.json"
+        if File.exists?(filename)
+            processed = JSON.parse( File.read(filename) )
+        else
             # Generate a pool of IP addresses available for use in this service.
             ip_pool = []
-            if (service_desc["ip_pool"].has_key?("range"))
+            if service_config["ip_pool"].has_key?("range")
                 require "ipaddr"
-                range_start = IPAddr.new service_desc["ip_pool"]["range"]["start"]
-                range_end = IPAddr.new service_desc["ip_pool"]["range"]["end"]
+                range_start = IPAddr.new service_config["ip_pool"]["range"]["start"]
+                range_end = IPAddr.new service_config["ip_pool"]["range"]["end"]
 
                 current_ip = range_start
-                while ((current_ip <=> range_end) <= 0) do
+                while (current_ip <=> range_end) <= 0 do
                     ip_pool << current_ip
                     current_ip = current_ip.succ
                 end
             end
-            if (service_desc["ip_pool"].has_key?("list"))
-                ip_pool = service_desc["ip_pool"]["list"]
+            if service_config["ip_pool"].has_key?("list")
+                ip_pool << service_config["ip_pool"]["list"]
             end
 
+            # Derive configuration for each instance.
+            service_config["nodes"].each do |node_config|
+                for i in 0..(node_config["quantity"] - 1)
+                    role = system["roles"][node_config["role"]]
 
-            # Expect different communication needs for different topologies.
-            case service_desc["topology"]
-            when "pool"
-                # Instances do not need to know about each other.
-                instances = service_desc["workers"]
-            when "cluster"
-                # Instances should know about their peers.
-                instances = service_desc["nodes"]
+                    instance_name = "#{service_name}.#{node_config["role"]}.#{i}"
+
+                    # Assign an IP address at random from the pool of available IP addresses.
+                    ip_address = ip_pool.sample
+                    ip_pool.delete_at(ip_pool.index(ip_address))
+
+                    processed[instance_name] = {
+                        "provider" => role["provider"],
+                        "virtual_hardware" => role["virtual_hardware"],
+                        "box" => role["box"],
+                        "box_url" => system["boxes"][role["box"]]["box_url"],
+                        "ip_address" => ip_address.to_s,
+                        "provision" => role["provision"]
+                    }
+                end
             end
 
+            # Write file at #{filename} with JSON encoded #{processed} data structure.
+            File.open(filename, 'w+') { |fh| fh.write( JSON.pretty_generate(processed) ) }
+        end
 
-            # Build each instance.
-            for i in 0..instances["quantity"]
-                role = system["roles"][instances["role"]]
+        processed.each do |instance_name, instance_config|
 
-                # Add instance to the list of built machines.  Begin empty and fill
-                # in details as they become available; this will help with
-                # troubleshooting when things go wrong.
-                instance_name = "#{service_name}.#{instances["role"]}.#{i}"
-                built_instances[instance_name] = {}
-
-                # Build machine instance.
+            # Do vagrant machine instance setup.
+            Vagrant.configure("2") do |config|
                 config.vm.define instance_name do |instance|
 
                     # Configure virtual hardware.
-                    case service_desc["provider"]
+                    case instance_config["provider"]
                     when "virtualbox"
                         instance.vm.provider :virtualbox do |virtualbox|
                             params = ["modifyvm", :id]
-                            role["virtual_hardware"].each do |attribute, value|
+                            instance_config["virtual_hardware"].each do |attribute, value|
                                 params << "--#{attribute}" << value
                             end
                             virtualbox.customize params
                         end
                     end
 
-                    # Configure base box (including OS).
-                    instance.vm.box = role["box"]
-                    instance.vm.box_url = system["boxes"][role["box"]]["box_url"]
+                    # Configure base box (the installed OS that will run on the VM).
+                    instance.vm.box = instance_config["box"]
+                    instance.vm.box_url = instance_config["box_url"]
 
-                    # Assign an IP address at random from the pool of available IP addresses.
-                    ip_address = ip_pool.sample
-                    ip_pool.delete_at(ip_pool.index(ip_address))
-                    print "[EVIE DEBUG] Assigning IP address to instance: #{ip_address}"
-                    instance.vm.network :private_network, ip: ip_address.to_s
-
-                    # Add info about this instance's assigned IP address.
-                    built_instances[instance_name]["ip_address"] = ip_address
+                    # Configure networking, assigning IP address.
+                    instance.vm.network :private_network, ip: instance_config["ip_address"]
 
                     # Provision instance.
-                    #role["provision"].each do |provision|
+                    #instance_config["provision"].each do |provision|
                     #    case provision["provisioner"]
                     #    when "shell"
                     #        instance.vm.provision :shell, :path => provision["path"]
@@ -100,20 +98,15 @@ def setup(system)
                     #end
                 end
             end
-
-            # TODO: If "lb" defined for service then build instances.
         end
     end
-
-    # Output details about the machines that were created.
-    print "instances: \n" + JSON.pretty_generate(built_instances) + "\n"
 end
 
 # Load JSON files describing system architecture, building each.  Config files must
 # be named using *.config.json format.
 Dir["infrastructure/config/*"].each do |filename|
-    filename = filename.scan(/^.*\.config\.json$/i)
-    if (filename.any?)
-        setup(JSON.parse(File.read(filename[0])))
+    config_filename = filename.scan(/^.*\.config\.json$/i)
+    if (config_filename.any?)
+        setup( JSON.parse( File.read(config_filename[0]) ) )
     end
 end

@@ -1,42 +1,23 @@
 {
     "services": {
         "analytics_api": {
-            "topology": "pool",
-            "provider": "virtualbox",
-            "ip_pool": {
-                "range": {
-                    "start": "33.33.33.0",
-                    "end": "33.33.33.255"
-                }
-            },
-            "workers": {
-                "quantity": 2,
-                "role": "api_worker"
-            },
-            "lb": {
-                "role": "lb"
-            }
+            "ip_pool": { "range": { "start": "33.33.33.0", "end": "33.33.33.255" } },
+            "nodes": [
+                { "role": "api_worker", "quantity": 2 },
+                { "role": "lb", "quantity": 1 }
+            ]
         },
         "riak": {
-            "topology": "cluster",
-            "provider": "virtualbox",
-            "ip_pool": {
-                "range": {
-                    "start": "33.33.34.0",
-                    "end": "33.33.34.255"
-                }
-            },
-            "nodes": {
-                "quantity": 5,
-                "role": "riak_node"
-            },
-            "lb": {
-                "role": "lb"
-            }
+            "ip_pool": { "range": { "start": "33.33.34.0", "end": "33.33.34.255" } },
+            "nodes": [
+                { "role": "riak_node", "quantity": 5 },
+                { "role": "lb", "quantity": 1 }
+            ]
         }
     },
     "roles": {
         "lb": {
+            "provider": "virtualbox",
             "virtual_hardware": {"memory": 128, "cpus": 2},
             "box": "lucid64",
             "synced_dir": "synced/lb/",
@@ -50,7 +31,8 @@
             ]
         },
         "api_worker": {
-            "virtual_hardware": {"memory": 512, "cpus": 8},
+            "provider": "virtualbox",
+            "virtual_hardware": {"memory": 128, "cpus": 8},
             "box": "lucid64",
             "synced_dir": "synced/api/",
             "provision": [
@@ -63,7 +45,8 @@
             ]
         },
         "riak_node": {
-            "virtual_hardware": {"memory": 256, "cpus": 4},
+            "provider": "virtualbox",
+            "virtual_hardware": {"memory": 128, "cpus": 4},
             "box": "lucid64",
             "synced_dir": "synced/riak/",
             "provision": [
