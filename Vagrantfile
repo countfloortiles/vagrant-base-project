@@ -90,12 +90,12 @@ def setup(system)
                     instance.vm.network :private_network, ip: instance_config["ip_address"]
 
                     # Provision instance.
-                    #instance_config["provision"].each do |provision|
-                    #    case provision["provisioner"]
-                    #    when "shell"
-                    #        instance.vm.provision :shell, :path => "provision/shell/#{provision["path"]}"
-                    #    end
-                    #end
+                    instance_config["provision"].each do |provision|
+                        case provision["provisioner"]
+                        when "shell"
+                            instance.vm.provision :shell, :path => "provision/shell/#{provision["path"]}"
+                        end
+                    end
                 end
             end
         end
