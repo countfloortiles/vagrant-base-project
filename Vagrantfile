@@ -76,7 +76,10 @@ def setup(system)
                     case instance_config["provider"]
                     when "virtualbox"
                         instance.vm.provider :virtualbox do |virtualbox|
-                            params = ["modifyvm", :id]
+                            params = [
+                                "modifyvm", :id,
+                                "--name", instance_name
+                            ]
                             instance_config["virtual_hardware"].each do |attribute, value|
                                 params << "--#{attribute}" << value
                             end
