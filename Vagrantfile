@@ -99,19 +99,19 @@ def setup(system)
 
                     # Set up synced directories.
                     {
-                        # Create /synced/common/ directory on guest machine for storing
+                        # Use /synced/common/ directory on guest machine for storing
                         # files that should be available to all instances.
                         "synced_common.#{instance_name}" => {
                             :host_dir => "synced/#{instance_config["service"]}/common/",
                             :guest_dir => "/synced/common/"
                         },
-                        # Create /synced/role/ directory on guest machine for storing
-                        # files that should be available to all instances of this role.
+                        # Use /synced/role/ directory on guest machine for storing files
+                        # that should be available to all instances of this role.
                         "synced_role.#{instance_name}" => {
                             :host_dir => "synced/#{instance_config["service"]}/#{instance_config["role"]}/",
                             :guest_dir => "/synced/role/"
                         },
-                        # Create /synced/instance/ directory on guest machine for storing
+                        # Use /synced/instance/ directory on guest machine for storing
                         # files that should be available only to this instance.
                         "synced_instance.#{instance_name}" => {
                             :host_dir => "synced/#{instance_config["service"]}/instance/#{instance_name}/",
