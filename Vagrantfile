@@ -99,19 +99,23 @@ def setup(system)
 
                     # Set up synced directories.
                     {
-                        # Let instance assume /synced_common/ directory on guest machine
-                        # for files that should be made available across all instances
-                        # within the given service (regardless of role).
+                        # Create /synced/common/ directory on guest machine for storing
+                        # files that should be available to all instances.
                         "synced_common.#{instance_name}" => {
                             :host_dir => "synced/#{instance_config["service"]}/common/",
-                            :guest_dir => "/synced_common/"
+                            :guest_dir => "/synced/common/"
                         },
-                        # Let instance assume /synced_role/ directory on guest machine
-                        # for files that should be made available across all instances
-                        # of the given role within the given service.
+                        # Create /synced/role/ directory on guest machine for storing
+                        # files that should be available to all instances of this role.
                         "synced_role.#{instance_name}" => {
                             :host_dir => "synced/#{instance_config["service"]}/#{instance_config["role"]}/",
-                            :guest_dir => "/synced_role/"
+                            :guest_dir => "/synced/role/"
+                        },
+                        # Create /synced/instance/ directory on guest machine for storing
+                        # files that should be available only to this instance.
+                        "synced_instance.#{instance_name}" => {
+                            :host_dir => "synced/#{instance_config["service"]}/instance/#{instance_name}/",
+                            :guest_dir => "/synced/instance/"
                         }
                     }.each do |synced_id, synced_config|
                         # Create host directory if it doesn't exist.
