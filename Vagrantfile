@@ -136,6 +136,10 @@ def setup(system)
                 end
             end
         end
+
+        # Copy {service name}.processed.json to make it available to the instances
+        # of the service in /synced/common/ on each guest machine.
+        FileUtils.cp("infrastructure/processed/#{service_name}.processed.json", "synced/#{service_name}/common/#{service_name}.processed.json")
     end
 end
 
